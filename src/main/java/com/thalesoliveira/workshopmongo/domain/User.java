@@ -3,9 +3,16 @@ package com.thalesoliveira.workshopmongo.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+//Define que esta classe é um documento do MongoDB e que os dados serão gravados na coleção (equivalente a tabela) chamada "user"
+@Document(collection="user")
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
+	// Indica que este atributo é a chave primária do documento (mapeado automaticamente para o campo "_id" no MongoDB)
+	@Id
 	private String id;
 	private String name;
 	private String email;
