@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.thalesoliveira.workshopmongo.domain.User;
+import com.thalesoliveira.workshopmongo.dto.UserDTO;
 import com.thalesoliveira.workshopmongo.repository.UserRepository;
 import com.thalesoliveira.workshopmongo.services.exception.ObjetoNotFoundException;
 
@@ -25,14 +26,34 @@ public class UserService {
 	public List<User> findAll() {
 		return repo.findAll();
 	}
-	
+
 	public User findById(String id) {
-		// Chama o repositório para buscar pelo ID. O retorno é 'Optional' porque o resultado é incerto:
-	    // funciona como uma "caixa" que pode conter o usuário ou estar vazia (null safe).
+		// Chama o repositório para buscar pelo ID. O retorno é 'Optional' porque o
+		// resultado é incerto:
+		// funciona como uma "caixa" que pode conter o usuário ou estar vazia (null
+		// safe).
 		Optional<User> obj = repo.findById(id);
 		// Tenta abrir a "caixa":
-	    // 1. Se tiver um usuário dentro, retorna o objeto User.
-	    // 2. Se a caixa estiver vazia (orElseThrow), dispara a sua exceção personalizada instantaneamente.
+		// 1. Se tiver um usuário dentro, retorna o objeto User.
+		// 2. Se a caixa estiver vazia (orElseThrow), dispara a sua exceção
+		// personalizada instantaneamente.
 		return obj.orElseThrow(() -> new ObjetoNotFoundException("Objeto não encontrado"));
+	}
+
+	// Método responsável por receber um objeto User e solicitar sua gravação no
+	// banco de dados
+	public User insert(User obj) {
+		// Chama a função 'insert' do repositório, que cria um novo documento no MongoDB
+		// e retorna o objeto já salvo (incluindo o ID gerado automaticamente)
+		return repo.insert(obj);
+	}
+
+	// Método auxiliar responsável por converter um objeto UserDTO (focado na
+	// comunicação externa) de volta para um objeto User (Entidade do banco de
+	// dados)
+	public User fromDTO(UserDTO objDTO) {
+		// Instancia uma nova Entidade User, extraindo os dados do DTO e passando para o
+		// construtor da Entidade
+		return new User(objDTO.getId(), objDTO.getName(), objDTO.getEmail());
 	}
 }

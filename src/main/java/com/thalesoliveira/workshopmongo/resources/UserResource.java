@@ -1,15 +1,17 @@
 package com.thalesoliveira.workshopmongo.resources;
 
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.thalesoliveira.workshopmongo.domain.User;
 import com.thalesoliveira.workshopmongo.dto.UserDTO;
@@ -57,5 +59,28 @@ public class UserResource {
 		// corpo da resposta com status 200 (OK), garantindo que apenas os dados
 		// filtrados sejam expostos
 		return ResponseEntity.ok().body(new UserDTO(obj));
+	}
+
+	// Mapeia requisições do tipo POST (usado para inserir/criar novos recursos no
+	// servidor)
+	@RequestMapping(method = RequestMethod.POST)
+	public ResponseEntity<Void> insert(@RequestBody UserDTO objDto) {
+
+		// Converte o objeto DTO que veio da requisição (JSON) para um objeto Entidade
+		// (User) que o banco entende
+		User obj = service.fromDTO(objDto);
+
+		// Chama o serviço para salvar no banco. A variável 'obj' é atualizada com o
+		// novo objeto salvo (agora contendo o ID gerado pelo Mongo)
+		obj = service.insert(obj);
+
+		// Cria o endereço (URI) do novo recurso criado. Pega a URL atual (ex: /users),
+		// adiciona "/{id}" e substitui pelo ID real do novo usuário
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(obj.getId()).toUri();
+
+		// Retorna o código HTTP 201 (Created). Esse código espera um cabeçalho
+		// 'Location' contendo a URI criada acima, mas não retorna corpo (body) na
+		// resposta
+		return ResponseEntity.created(uri).build();
 	}
 }
