@@ -60,6 +60,27 @@ public class UserService {
 		repo.deleteById(id);
 	}
 
+	// Método responsável por atualizar um usuário existente
+	public User update(User obj) {
+
+		// Busca o usuário no banco usando o nosso método auxiliar 'findById'.
+		// Importante: Não usa 'repo.findById' aqui diretamente para reaproveitar a
+		// lógica que já trata a exceção 'ObjectNotFoundException' caso o ID não exista.
+		User newObj = findById(obj.getId());
+
+		// Atualiza os dados do objeto recuperado (newObj) com os dados novos que vieram
+		// da requisição (obj)
+		updateData(newObj, obj);
+
+		// Salva as alterações no banco de dados
+		return repo.save(newObj);
+	}
+
+	private void updateData(User newObj, User obj) {
+		newObj.setName(obj.getName());
+		newObj.setEmail(obj.getEmail());
+	}
+
 	// Método auxiliar responsável por converter um objeto UserDTO (focado na
 	// comunicação externa) de volta para um objeto User (Entidade do banco de
 	// dados)

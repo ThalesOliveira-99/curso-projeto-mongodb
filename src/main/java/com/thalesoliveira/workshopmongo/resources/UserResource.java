@@ -99,4 +99,29 @@ public class UserResource {
 		// com sucesso, mas não tenho nada para te mostrar de volta".
 		return ResponseEntity.noContent().build();
 	}
+
+	// Mapeia requisições do tipo PUT (usado para atualizar dados) que tenham um ID
+	// na URL.
+	// Exemplo de chamada: PUT /users/123 (onde o corpo do JSON traz os novos dados)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public ResponseEntity<Void> update(@RequestBody UserDTO objDto, @PathVariable String id) {
+
+		// 1. Converte o DTO (JSON recebido) para um objeto Entidade (User).
+		// Isso é necessário porque o Service trabalha com Entidades, não com DTOs.
+		User obj = service.fromDTO(objDto);
+
+		// 2. Garante a segurança e consistência: Pega o ID que veio na URL
+		// (@PathVariable) e o coloca dentro do objeto.
+		// Isso evita que o usuário mal intencionado envie um ID na URL (123) e outro
+		// diferente no JSON (456). O da URL manda.
+		obj.setId(id);
+
+		// 3. Chama o serviço para efetivar a atualização no banco de dados.
+		obj = service.update(obj);
+
+		// 4. Retorna o código HTTP 204 (No Content).
+		// Assim como no Delete, no Update geralmente não precisa retornar nada,
+		// apenas avisar que a operação foi um sucesso.
+		return ResponseEntity.noContent().build();
+	}
 }
