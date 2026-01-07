@@ -83,4 +83,20 @@ public class UserResource {
 		// resposta
 		return ResponseEntity.created(uri).build();
 	}
+
+	// Mapeia requisições HTTP do tipo DELETE que tenham um ID na URL (ex: DELETE
+	// /users/123)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public ResponseEntity<Void> delete(@PathVariable String id) {
+
+		// Chama a camada de serviço para realizar a exclusão.
+		// Lembre-se: o seu serviço já tem a lógica de verificar se o ID existe antes de
+		// tentar apagar.
+		service.delete(id);
+
+		// Retorna o código HTTP 204 (No Content).
+		// Esse é o padrão mundial para deletar: diz ao navegador "Operação realizada
+		// com sucesso, mas não tenho nada para te mostrar de volta".
+		return ResponseEntity.noContent().build();
+	}
 }

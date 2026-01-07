@@ -48,6 +48,18 @@ public class UserService {
 		return repo.insert(obj);
 	}
 
+	// Método responsável por excluir um usuário do banco de dados
+	public void delete(String id) {
+		// Passo 1: Busca o usuário pelo ID para garantir que ele existe.
+		// Se o ID não for encontrado, este método lança a exceção
+		// "ObjectNotFoundException" e o código para aqui (não tenta deletar).
+		findById(id);
+
+		// Passo 2: Se passou pela linha de cima, significa que o usuário existe.
+		// Então, chama o repositório para efetuar a exclusão física no MongoDB.
+		repo.deleteById(id);
+	}
+
 	// Método auxiliar responsável por converter um objeto UserDTO (focado na
 	// comunicação externa) de volta para um objeto User (Entidade do banco de
 	// dados)
