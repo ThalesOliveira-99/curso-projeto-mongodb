@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,7 +28,6 @@ public class UserResource {
 
 	// Quando alguém acessar essa URL querendo buscar informações (GET), execute
 	// este método aqui
-	// @GetMapping
 	@RequestMapping(method = RequestMethod.GET)
 	// Encapsula toda a estrutura da resposta HTTP: permite definir o código de
 	// status (ex: 200 OK, 404 Not Found), os cabeçalhos e o corpo (body) da
@@ -42,5 +42,20 @@ public class UserResource {
 		// Retorna a resposta com status HTTP 200 (Sucesso) e coloca a lista de usuários
 		// no corpo da resposta
 		return ResponseEntity.ok().body(listDto);
+	}
+
+	// Mapeia requisições do tipo GET que trazem um id na URL (ex: /users/123). As
+	// chaves { } indicam que essa parte do caminho é variável.
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
+	// O @PathVariable pega o valor do "{id}" que veio na URL e o atribui à variável
+	// 'id' para ser usada na busca. O retorno será um UserDTO envelopado.
+	public ResponseEntity<UserDTO> findById(@PathVariable String id) {
+		// Aciona a camada de serviço para buscar o usuário pelo ID e guarda o objeto
+		// original (Entidade) retornado na variável 'obj'
+		User obj = service.findById(id);
+		// Converte o objeto 'obj' (Entidade) para 'UserDTO' ali mesmo e o envia no
+		// corpo da resposta com status 200 (OK), garantindo que apenas os dados
+		// filtrados sejam expostos
+		return ResponseEntity.ok().body(new UserDTO(obj));
 	}
 }
