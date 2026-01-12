@@ -1,21 +1,33 @@
 package com.thalesoliveira.workshopmongo.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 //Define que esta classe é um documento do MongoDB e que os dados serão gravados na coleção (equivalente a tabela) chamada "user"
-@Document(collection="user")
+@Document(collection = "user")
 public class User implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	// Indica que este atributo é a chave primária do documento (mapeado automaticamente para o campo "_id" no MongoDB)
+	// Indica que este atributo é a chave primária do documento (mapeado
+	// automaticamente para o campo "_id" no MongoDB)
 	@Id
 	private String id;
 	private String name;
 	private String email;
+
+	// @DBRef: Indica que não devemos salvar os posts DENTRO do usuário, mas sim
+	// salvar apenas uma referência (link) para eles.
+	// Funciona como uma "Chave Estrangeira" do SQL: o banco guarda só o ID, e o
+	// Spring se encarrega de buscar os dados completos na outra coleção quando
+	// precisarmos.
+	@DBRef(lazy = true)
+	private List<Post> posts = new ArrayList<>();
 
 	public User() {
 
@@ -50,6 +62,14 @@ public class User implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public List<Post> getPosts() {
+		return posts;
+	}
+
+	public void setPosts(List<Post> posts) {
+		this.posts = posts;
 	}
 
 	@Override
