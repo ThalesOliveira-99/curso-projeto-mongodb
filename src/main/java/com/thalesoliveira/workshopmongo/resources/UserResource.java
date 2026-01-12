@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.thalesoliveira.workshopmongo.domain.Post;
 import com.thalesoliveira.workshopmongo.domain.User;
 import com.thalesoliveira.workshopmongo.dto.UserDTO;
 import com.thalesoliveira.workshopmongo.services.UserService;
@@ -123,5 +124,17 @@ public class UserResource {
 		// Assim como no Delete, no Update geralmente não precisa retornar nada,
 		// apenas avisar que a operação foi um sucesso.
 		return ResponseEntity.noContent().build();
+	}
+	
+	@RequestMapping(value="/{id}/posts", method=RequestMethod.GET)
+	// Endpoint para buscar todos os posts de um usuário específico (Ex: GET /users/123/posts)
+	public ResponseEntity<List<Post>> findPosts(@PathVariable String id) {
+	    
+	    // 1. Primeiro, carrega o objeto Usuário inteiro do banco de dados.
+	    User obj = service.findById(id);
+	    
+	    // 2. Acessa a lista de posts desse usuário e a retorna.
+	    // O PULO DO GATO: Se você usou @DBRef, é exatamente aqui no 'getPosts()' que o Spring vai automaticamente na outra coleção buscar os dados dos posts.
+	    return ResponseEntity.ok().body(obj.getPosts());
 	}
 }
