@@ -1,5 +1,6 @@
 package com.thalesoliveira.workshopmongo.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,21 @@ public class PostService {
 		// A grande vantagem agora é que ele ignora maiúsculas e minúsculas (Case
 		// Insensitive) por causa da opção 'i' que configuramos no banco.
 		return repo.searchTitle(text);
+	}
+
+	public List<Post> fullSearch(String text, Date minDate, Date maxDate) {
+
+		// AJUSTE DE DATA (O Pulo do Gato):
+		// Por padrão, a data 'maxDate' vem setada como meia-noite (00:00:00).
+		// Se o usuário pedir até o dia 10/01, e tiver um post feito dia 10/01 às 15h,
+		// ele NÃO apareceria.
+		// Esta linha adiciona 24 horas (em milissegundos) à data final.
+		// Cálculo: 24 horas * 60 minutos * 60 segundos * 1000 milissegundos = 1 dia.
+		maxDate = new Date(maxDate.getTime() + 24 * 60 * 60 * 1000);
+
+		// Agora sim, chama o repositório passando a data final ajustada (que agora é
+		// 00:00 do dia SEGUINTE),
+		// garantindo que pegaremos todos os posts do último dia até o último segundo.
+		return repo.fullSearch(text, minDate, maxDate);
 	}
 }

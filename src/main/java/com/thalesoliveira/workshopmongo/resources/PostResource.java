@@ -1,5 +1,6 @@
 package com.thalesoliveira.workshopmongo.resources;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,39 @@ public class PostResource {
 		List<Post> list = service.findByTitle(text);
 
 		// 3. Retorna a lista encontrada com status 200 OK.
+		return ResponseEntity.ok().body(list);
+	}
+
+	// Endpoint para busca complexa (Texto + Período de Datas)
+	// Sugestão de melhoria: Mudar o value para "/fullsearch" e o nome do método
+	// para 'fullSearch' para refletir a realidade.
+	@RequestMapping(value = "/fullsearch", method = RequestMethod.GET)
+	public ResponseEntity<List<Post>> findByTitle(
+			// Recebe o texto, data mínima e máxima via Query Param (URL depois do ?)
+			@RequestParam(value = "text", defaultValue = "") String text,
+			@RequestParam(value = "minDate", defaultValue = "") String minDate,
+			@RequestParam(value = "maxDate", defaultValue = "") String maxDate) {
+
+		// 1. Decodifica o texto (ex: "Bom%20Dia" -> "Bom Dia")
+		text = URL.decodeParam(text);
+
+		// 2. Trata a Data Mínima
+		// Se o usuário não informar a data mínima (ou mandar errado), usamos "new
+		// Date(0L)".
+		// 0L representa o "marco zero" da computação (01/01/1970). Ou seja: busca desde
+		// o início dos tempos.
+		Date min = URL.convertDate(minDate, new Date(0L));
+
+		// 3. Trata a Data Máxima
+		// Se o usuário não informar a data máxima, usamos "new Date()".
+		// new Date() cria um objeto com a data e hora exata de AGORA. Ou seja: busca
+		// até o momento atual.
+		Date max = URL.convertDate(maxDate, new Date());
+
+		// 4. Chama o serviço de busca completa, passando os dados já tratados
+		List<Post> list = service.fullSearch(text, min, max);
+
+		// 5. Retorna a lista filtrada
 		return ResponseEntity.ok().body(list);
 	}
 }

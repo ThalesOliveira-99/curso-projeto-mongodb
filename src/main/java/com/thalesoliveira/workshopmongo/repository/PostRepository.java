@@ -1,5 +1,6 @@
 package com.thalesoliveira.workshopmongo.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -28,4 +29,14 @@ public interface PostRepository extends MongoRepository<Post, String> {
 	// 3. "Containing": Aplica um filtro de texto parcial (semelhante ao LIKE
 	// '%texto%' do SQL).
 	List<Post> findByTitleContainingIgnoreCase(String text);
+
+	// @Query: Define uma consulta JSON personalizada completa.
+	// A estrutura geral é um grande E ($and), que exige que três coisas aconteçam
+	// ao mesmo tempo:
+	// 1. A data deve ser maior ou igual a minDate.
+	// 2. A data deve ser menor ou igual a maxDate.
+	// 3. O texto deve ser encontrado em PELO MENOS UM ($or) destes lugares: Título,
+	// Corpo ou Comentários.
+	@Query("{ $and: [ {date: {$gte: ?1} }, {date: {$lte: ?2} } , { $or: [ { 'title': { $regex: ?0, $options: 'i' } }, { 'body': { $regex: ?0, $options: 'i' } }, { 'comments.text': { $regex: ?0, $options: 'i' } } ] } ] }")
+	List<Post> fullSearch(String text, Date minDate, Date maxDate);
 }
