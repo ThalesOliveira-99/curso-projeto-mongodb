@@ -39,4 +39,15 @@ public class PostService {
 		// completa
 		return repo.findAll();
 	}
+
+	// Método de serviço responsável por buscar uma lista de Posts baseada em um
+	// trecho de texto
+	public List<Post> findByTitle(String text) {
+
+		// Chama o método do repositório.
+		// O sufixo 'Containing' é uma palavra-chave mágica do Spring Data.
+		// Ele diz ao banco: "Não procure o título exato, procure qualquer título que
+		// CONTENHA esse texto no meio (como o LIKE %texto% do SQL)".
+		return repo.findByTitleContainingIgnoreCase(text);
+	}
 }
