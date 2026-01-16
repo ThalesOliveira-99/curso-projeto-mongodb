@@ -3,6 +3,7 @@ package com.thalesoliveira.workshopmongo.repository;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.thalesoliveira.workshopmongo.domain.Post;
@@ -11,6 +12,13 @@ import com.thalesoliveira.workshopmongo.domain.Post;
 @Repository
 //Herda métodos prontos do Spring Data (como save, delete, findAll) para a entidade User, onde o ID é do tipo String
 public interface PostRepository extends MongoRepository<Post, String> {
+
+	// @Query: Permite que você escreva uma consulta personalizada no formato JSON
+	// do MongoDB.
+	// Isso sobrescreve a criação automática de consulta do Spring (o nome do método
+	// 'searchTitle' não importa mais).
+	@Query("{ 'title': { $regex: ?0, $options: 'i' } }")
+	List<Post> searchTitle(String text);
 
 // QUERY METHOD (Método de Consulta Automático)
 

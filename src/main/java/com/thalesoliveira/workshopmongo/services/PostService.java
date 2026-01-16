@@ -40,14 +40,13 @@ public class PostService {
 		return repo.findAll();
 	}
 
-	// Método de serviço responsável por buscar uma lista de Posts baseada em um
-	// trecho de texto
+	// Método de serviço responsável por buscar posts contendo um texto
 	public List<Post> findByTitle(String text) {
 
-		// Chama o método do repositório.
-		// O sufixo 'Containing' é uma palavra-chave mágica do Spring Data.
-		// Ele diz ao banco: "Não procure o título exato, procure qualquer título que
-		// CONTENHA esse texto no meio (como o LIKE %texto% do SQL)".
-		return repo.findByTitleContainingIgnoreCase(text);
+		// Chama o nosso método personalizado 'searchTitle' lá do Repository.
+		// Diferente do anterior, este aqui usa a anotação @Query com regex.
+		// A grande vantagem agora é que ele ignora maiúsculas e minúsculas (Case
+		// Insensitive) por causa da opção 'i' que configuramos no banco.
+		return repo.searchTitle(text);
 	}
 }
